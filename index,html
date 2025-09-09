@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Air Quality Analysis — Project One‑Pager</title>
+  <meta name="description" content="One‑page academic summary of air quality data cleaning and analysis (CO, NOx, NO₂, Temperature, Humidity)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0b17;
+      --panel: #161028;
+      --panel-2: #1d1436;
+      --text: #f3f1f8;
+      --muted: #c9c3da;
+      --brand: #7c3aed; /* purple-600 */
+      --brand-700: #6d28d9;
+      --brand-800: #5b21b6;
+      --accent: #a78bfa; /* purple-300 */
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 10px 25px rgba(124, 58, 237, 0.25);
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --maxw: 1100px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #faf7ff;
+        --panel: #ffffff;
+        --panel-2: #f4edff;
+        --text: #1b102d;
+        --muted: #4b3a6b;
+        --shadow: 0 8px 24px rgba(124, 58, 237, 0.18);
+      }
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(124, 58, 237, 0.18), transparent 60%),
+                  radial-gradient(900px 700px at 0% 110%, rgba(167, 139, 250, 0.20), transparent 60%),
+                  var(--bg);
+      line-height: 1.55;
+    }
+
+    /* Top nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: saturate(140%) blur(8px);
+      background: linear-gradient(180deg, rgba(15,11,23,0.85), rgba(15,11,23,0.55));
+      border-bottom: 1px solid rgba(124,58,237,0.25);
+    }
+    .nav .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .logo {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: conic-gradient(from 220deg, var(--brand), var(--accent));
+      box-shadow: var(--shadow);
+    }
+    .nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    .links { display: flex; gap: 14px; flex-wrap: wrap; }
+    .links a:hover { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      max-width: var(--maxw);
+      margin: 40px auto 24px;
+      padding: 28px 20px 0;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 26px;
+    }
+    .hero-card {
+      background: linear-gradient(180deg, rgba(124,58,237,0.12), rgba(124,58,237,0.05));
+      border: 1px solid rgba(124,58,237,0.25);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+    h1 {
+      font-family: Merriweather, Georgia, "Times New Roman", serif;
+      font-size: clamp(28px, 3vw, 44px);
+      line-height: 1.1;
+      margin: 0 0 10px;
+      letter-spacing: 0.2px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: clamp(14px, 1.45vw, 18px);
+      max-width: 60ch;
+    }
+    .meta {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;
+    }
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(167,139,250,0.35);
+      background: rgba(167,139,250,0.10);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* Sections */
+    section { max-width: var(--maxw); margin: 24px auto; padding: 0 20px; }
+    .grid { display: grid; gap: 18px; }
+    .two { grid-template-columns: 1fr 1fr; }
+    .three { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      font-family: Merriweather, Georgia, serif;
+      font-size: clamp(20px, 2.2vw, 28px);
+      margin: 0 0 12px;
+      color: var(--accent);
+    }
+
+    h3 { font-size: 16px; margin: 10px 0 6px; }
+    p { margin: 8px 0; }
+    ul { margin: 8px 0 0 18px; }
+
+    .kpi {
+      display: grid; grid-template-columns: 1fr auto; align-items: baseline;
+      padding: 10px 12px; border-radius: var(--radius-md);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px dashed rgba(167,139,250,0.35);
+    }
+    .kpi .label { color: var(--muted); font-weight: 600; }
+    .kpi .value { font-size: 20px; font-weight: 800; }
+    .kpis { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid rgba(124,58,237,0.25); }
+    th { text-align: left; color: var(--accent); font-weight: 700; }
+    tbody tr:hover { background: rgba(124,58,237,0.10); }
+
+    .note {
+      font-size: 13px; color: var(--muted);
+      border-left: 3px solid var(--brand);
+      padding: 10px 12px; margin-top: 6px;
+      background: linear-gradient(90deg, rgba(124,58,237,0.12), transparent 60%);
+      border-radius: 6px;
+    }
+
+    .footer {
+      max-width: var(--maxw);
+      margin: 36px auto 80px;
+      padding: 0 20px;
+      display: grid; gap: 16px;
+      color: var(--muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 18px; }
+      .kpis { grid-template-columns: 1fr 1fr; }
+      .three { grid-template-columns: 1fr; }
+      .two { grid-template-columns: 1fr; }
+    }
+
+    /* Print-friendly adjustments */
+    @media print {
+      body { background: #fff; color: #111; }
+      .nav { display: none; }
+      .card, .hero-card { box-shadow: none; border-color: #bbb; }
+      a { color: #000; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <a href="#top" aria-label="Project: Air Quality Analysis">Air Quality Analysis</a>
+      </div>
+      <nav class="links" aria-label="Primary">
+        <a href="#abstract">Abstract</a>
+        <a href="#data">Data</a>
+        <a href="#methods">Methods</a>
+        <a href="#results">Results</a>
+        <a href="#findings">Key Findings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="hero-card">
+        <h1>Urban Air Quality — Cleaned & Analyzed</h1>
+        <p class="subtitle">This one‑pager summarizes the cleaning and analysis of an air quality dataset containing trace gases (CO, NOx, NO₂) and meteorological factors (temperature, relative humidity, absolute humidity). We removed invalid readings (−200), imputed missing numeric values, and built a unified time index for robust analysis.</p>
+        <div class="meta">
+          <span class="badge" title="Data rows">N = 9,357</span>
+          <span class="badge">Period: multi‑season</span>
+          <span class="badge">Theme: Academic · Purple</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2 id="abstract">Abstract</h2>
+        <p>We process an atmospheric dataset by (i) removing sentinel values (−200), (ii) imputing missing numeric entries with mean values, and (iii) constructing a <em>DateTime</em> field from <em>Date</em> and <em>Time</em>. Descriptive statistics indicate moderate CO, highly variable NOx with extreme peaks, and stable yet non‑trivial NO₂ concentrations. Meteorological variables span all seasons, enabling analysis of weather–pollution interactions.</p>
+        <div class="note">Keywords: air quality, data cleaning, imputation, CO, NOx, NO₂, temperature, humidity, urban environment.</div>
+      </div>
+    </div>
+
+    <section id="data" aria-labelledby="data">
+      <div class="grid three">
+        <div class="card">
+          <h2>Dataset</h2>
+          <p><strong>File:</strong> <code>AirQuality.csv</code></p>
+          <p><strong>Observations:</strong> 9,357 after cleaning</p>
+          <p><strong>Variables:</strong> CO(GT), NOx(GT), NO₂(GT), T, RH, AH, sensors (PT08.S*)</p>
+          <ul>
+            <li>Invalid readings coded as <code>−200</code> → treated as missing</li>
+            <li>Trailing empty columns removed</li>
+            <li>Time index created from Date + Time</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h2>Cleaning Steps</h2>
+          <ol>
+            <li>Drop unnamed columns</li>
+            <li>Replace <code>−200</code> with <code>NaN</code></li>
+            <li>Impute numeric columns with column means</li>
+            <li>Construct <code>DateTime</code> using <code>%d/%m/%Y %H.%M.%S</code></li>
+            <li>Drop unparsable timestamps; reset index</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h2>At‑a‑Glance</h2>
+          <div class="kpis">
+            <div class="kpi"><span class="label">CO mean</span><span class="value">2.15 mg/m³</span></div>
+            <div class="kpi"><span class="label">NOx mean</span><span class="value">246.90 ppb</span></div>
+            <div class="kpi"><span class="label">NO₂ mean</span><span class="value">113.09 ppb</span></div>
+            <div class="kpi"><span class="label">Temp mean</span><span class="value">18.32 °C</span></div>
+            <div class="kpi"><span class="label">RH mean</span><span class="value">49.23 %</span></div>
+            <div class="kpi"><span class="label">AH mean</span><span class="value">1.03</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="methods">
+      <div class="grid two">
+        <div class="card">
+          <h2>Methods</h2>
+          <p><strong>Imputation:</strong> Column‑wise mean for numeric variables, preserving scale and variance for descriptive analysis.</p>
+          <p><strong>Time Series Setup:</strong> <code>DateTime</code> used as index for ordering and potential seasonality checks.</p>
+          <p><strong>Descriptives:</strong> Count, mean, standard deviation, and range computed for core variables.</p>
+        </div>
+        <div class="card">
+          <h2>Reproducible Code (Python)</h2>
+<pre><code>import pandas as pd, numpy as np
+
+# Load & tidy
+df = pd.read_csv('AirQuality.csv', sep=';', decimal=',', encoding='latin1')
+df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+df = df.replace(-200, np.nan)
+
+# Impute numeric
+for c in df.select_dtypes(include=[np.number]):
+    df[c] = df[c].fillna(df[c].mean())
+
+# DateTime
+df = df.dropna(subset=['Date','Time'])
+df['DateTime'] = pd.to_datetime(
+    df['Date'] + ' ' + df['Time'],
+    format='%d/%m/%Y %H.%M.%S', errors='coerce')
+df = df.dropna(subset=['DateTime']).reset_index(drop=True)
+</code></pre>
+          <div class="note">Swap the imputation strategy (e.g., median or KNN) if distributional robustness is a priority.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="results">
+      <div class="card">
+        <h2>Results — Descriptive Statistics</h2>
+        <table role="table" aria-label="Summary statistics for key variables">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Mean</th>
+              <th>Std</th>
+              <th>Min</th>
+              <th>25%</th>
+              <th>Median</th>
+              <th>75%</th>
+              <th>Max</th>
+              <th>Unit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>CO(GT)</td><td>2.15</td><td>1.32</td><td>0.10</td><td>1.20</td><td>2.15</td><td>2.60</td><td>11.90</td><td>mg/m³</td></tr>
+            <tr><td>NOx(GT)</td><td>246.90</td><td>193.43</td><td>2.00</td><td>112.00</td><td>229.00</td><td>284.00</td><td>1479.00</td><td>ppb</td></tr>
+            <tr><td>NO₂(GT)</td><td>113.09</td><td>43.92</td><td>2.00</td><td>86.00</td><td>113.09</td><td>133.00</td><td>340.00</td><td>ppb</td></tr>
+            <tr><td>T</td><td>18.32</td><td>8.66</td><td>-1.90</td><td>12.00</td><td>18.30</td><td>24.10</td><td>44.60</td><td>°C</td></tr>
+            <tr><td>RH</td><td>49.23</td><td>16.97</td><td>9.20</td><td>36.60</td><td>49.23</td><td>61.90</td><td>88.70</td><td>%</td></tr>
+            <tr><td>AH</td><td>1.03</td><td>0.40</td><td>0.18</td><td>0.75</td><td>1.02</td><td>1.30</td><td>2.23</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Statistics computed after cleaning and imputation on N = 9,357 records.</p>
+      </div>
+    </section>
+
+    <section id="findings">
+      <div class="grid two">
+        <div class="card">
+          <h2>Key Findings</h2>
+          <ul>
+            <li><strong>NOx variability</strong> is high with extreme peaks (up to 1,479 ppb), reflecting episodic emissions (e.g., traffic or industry).</li>
+            <li><strong>CO levels</strong> are moderate on average (≈2.15 mg/m³) but exhibit short‑term spikes.</li>
+            <li><strong>NO₂</strong> remains comparatively stable yet indicates persistent urban pollution.</li>
+            <li><strong>Meteorology</strong> spans full seasons (−1.9 to 44.6 °C; 9–89% RH), enabling weather–pollution analysis.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h2>Next Steps</h2>
+          <ul>
+            <li>Time‑of‑day and day‑of‑week patterns for traffic‑related pollutants</li>
+            <li>Meteorology‑adjusted models (e.g., GAMs, random forests)</li>
+            <li>Anomaly detection for extreme NOx episodes</li>
+            <li>Alternative imputations (median/KNN) for robustness checks</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div>
+        <strong>Contact:</strong> Farzaneh Ramezani Boye · ramezaniboyefarzaneh@example.com
+      </div>
+      <div>
+        © <span id="year"></span> Air Quality Analysis — Academic One‑Pager
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
